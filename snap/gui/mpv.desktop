@@ -25,7 +25,7 @@ Comment[pl]=Odtwarzaj filmy i muzykę
 Comment[ru]=Воспроизвести фильмы и музыку
 Comment[zh_CN]=播放电影和歌曲
 Comment[zh_TW]=播放電影和歌曲
-Icon={SNAP}/meta/gui/mpv.svg
+Icon={SNAP}/meta/gui/mpv.png
 TryExec=mpv
 Exec=mpv --player-operation-mode=pseudo-gui -- %U
 Terminal=false
