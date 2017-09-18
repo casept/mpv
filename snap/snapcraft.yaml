@@ -1,5 +1,5 @@
 name: mpv
-version: '0.26.0'
+version: '0.27.0'
 summary: a free, open source, and cross-platform media player.
 description: |
   mpv is a media player based on MPlayer and mplayer2.
@@ -11,6 +11,8 @@ description: |
 grade: stable
 confinement: strict
 
+icon: mpv_logo.png
+
 apps:
   mpv:
     command: desktop-launch $SNAP/usr/bin/mpv
@@ -18,13 +20,13 @@ apps:
 
 parts:
   youtube-dl:
-    source: https://github.com/rg3/youtube-dl/archive/2017.07.30.1.tar.gz
+    source: https://github.com/rg3/youtube-dl/archive/2017.09.15.tar.gz
     plugin: python
     python-version: python3
     after: [ffmpeg]
 
   mpv:
-    source: https://github.com/mpv-player/mpv/archive/v0.26.0.tar.gz
+    source: https://github.com/mpv-player/mpv/archive/v0.27.0.tar.gz
     plugin: waf
     configflags:
       - --enable-cdda
