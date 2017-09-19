@@ -5,3 +5,4 @@ prime
 *.snap
 *_source.tar.bz2
 *.snap-build
+snap/.snapcraft/
