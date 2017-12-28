@@ -15,6 +15,9 @@ icon: mpv_logo.png
 
 apps:
   mpv:
+    environment:
+      # directory where vapoursynth plugins should reside
+      VAPOURSYNTH_PLUGIN_PATH: $SNAP/lib/vapoursynth
     command: desktop-launch $SNAP/usr/bin/mpv
     plugs: [x11, opengl, unity7, pulseaudio, home, network, removable-media, optical-drive]
 
@@ -94,6 +97,7 @@ parts:
       - libdvdread-dev
       - libegl1-mesa-dev
       - libenca-dev
+      - libfdk-aac-dev
       - libgbm-dev
       - libgl1-mesa-dev
       - libguess-dev
@@ -114,6 +118,7 @@ parts:
       - libvdpau-dev
       - libwayland-dev
       - libx11-dev
+      - libx264-dev
       - libxinerama-dev
       - libxkbcommon-dev
       - libxrandr-dev
@@ -125,6 +130,7 @@ parts:
     after:
       - desktop-glib-only
       - ffmpeg
+      - vapoursynth
     organize:
       usr/local: usr/
     # Exclude some junk from the final snap
@@ -172,6 +178,8 @@ parts:
       - --enable-libvpx
       - --enable-libwavpack
       - --enable-libwebp
+      - --enable-libx264
+      - --enable-libfdk-aac
       - --enable-libx265
       - --enable-libxvid
       - --enable-libzmq
@@ -251,6 +259,74 @@ parts:
       - texinfo
       - nasm
       - zlib1g-dev
+    organize:
+      usr/local: usr/
+    # Exclude some junk from the final snap
+    prime:
+      - -usr/share/doc
+      - -usr/share/icons
+      - -usr/include
+      - -usr/doc
+      - -usr/man
+
+  vapoursynth:
+    # NOTE: Releases R36 and R37 seem to have errors
+    source: https://github.com/vapoursynth/vapoursynth/archive/R35.tar.gz
+    # replace hardcoded vapoursynth plugin directory with snap version
+    prepare: |
+        perl -pi -007e 's/\Qstd::string systemPluginDir(tmp ? tmp : VS_PATH_PLUGINDIR);\E/const char *snapPluginDir = getenv("VAPOURSYNTH_PLUGIN_PATH");\nstd::string systemPluginDir(snapPluginDir);\n/gms' src/core/vscore.cpp
+    plugin: autotools
+    configflags:
+      - --disable-ocr
+    build-packages:
+      - git
+      - g++
+      - make
+      - autoconf
+      - libtool
+      - cmake
+      - cython
+      - automake
+      - build-essential
+      - yasm
+    organize:
+      usr/local/lib: usr/lib
+    after:
+      - zimg
+
+  vapoursynth-mvtools:
+    source: git://github.com/dubhater/vapoursynth-mvtools.git
+    plugin: autotools
+    install: |
+      mkdir $SNAPCRAFT_PART_INSTALL/lib/vapoursynth/
+      mv $SNAPCRAFT_PART_INSTALL/lib/libmvtools* $SNAPCRAFT_PART_INSTALL/lib/vapoursynth/
+    build-packages:
+      - git
+      - g++
+      - make
+      - autoconf
+      - libtool
+      - cmake
+      - automake
+      - build-essential
+      - libfftw3-dev
+    after:
+      - vapoursynth
+
+  zimg:
+    source: git://github.com/sekrit-twc/zimg.git
+    plugin: autotools
+    configflags:
+      - --enable-x86simd
+    build-packages:
+      - git
+      - g++
+      - make
+      - autoconf
+      - libtool
+      - cmake
+      - automake
+      - build-essential
     organize:
       usr/local: usr/
     # Exclude some junk from the final snap
